@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chatbot Interface</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/themes/dark.css" id="theme-style">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <img src="/assets/images/logo.svg" alt="Chatbot Logo" class="logo">
+            <h1>Modern Chatbot</h1>
+            <button id="theme-toggle">Toggle Theme</button>
+        </header>
+        <main id="chat-container"></main>
+        <footer>
+            <div id="chat-input"></div>
+        </footer>
+    </div>
+</body>
+</html>
