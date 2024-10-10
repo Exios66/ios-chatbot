@@ -1,5 +1,14 @@
 # Chatbot Interface
 
+<!-- SCREENCAST START -->
+<p align="center">
+  <img
+    src="https://aider.chat/assets/screencast.svg"
+    alt="aider screencast"
+  >
+</p>
+<!-- SCREENCAST END -->
+
 A simple chatbot interface with real-time communication using Node.js, Express, and Socket.IO.
 
 ## Installation
