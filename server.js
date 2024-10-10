@@ -12,7 +12,13 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve index.html for the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Error handling middleware
 app.use(errorHandler);
@@ -20,7 +26,7 @@ app.use(errorHandler);
 io.on('connection', (socket) => {
     logger.info('New client connected', { socketId: socket.id });
 
-    socket.on('chat message', async (message) => {
+    socket.on('chat message', async (message, callback) => {
         try {
             logger.info('Message received:', { message, socketId: socket.id });
 
@@ -33,11 +39,12 @@ io.on('connection', (socket) => {
             // Simulate delay before sending response
             setTimeout(() => {
                 socket.emit('bot stop typing');
+                callback({ response });
                 io.emit('chat message', response);
             }, 1000 + Math.random() * 2000);
         } catch (error) {
             logger.error('Error processing chat message', { error: error.message, socketId: socket.id });
-            socket.emit('error', 'An error occurred while processing your message.');
+            callback({ error: 'An error occurred while processing your message.' });
         }
     });
 
