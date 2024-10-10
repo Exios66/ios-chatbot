@@ -3,15 +3,21 @@ export default class TypingIndicator {
         this.container = container;
         this.message = options.message || 'Bot is typing';
         this.timeout = options.timeout || 5000; // default timeout duration
+        this.animationStyle = options.animationStyle || 'dots';
         this.element = this.createElement();
         this.container.appendChild(this.element);
         this.timeoutId = null;
+        this.addEventListeners();
     }
 
     createElement() {
         const element = document.createElement('div');
         element.classList.add('typing-indicator');
-        element.innerHTML = `<span>${this.message}</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>`;
+        element.setAttribute('role', 'alert');
+        element.innerHTML = `
+            <span>${this.message}</span>
+            ${this.animationStyle === 'dots' ? `<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>` : ''}
+        `;
         element.style.display = 'none';
         return element;
     }
@@ -19,13 +25,17 @@ export default class TypingIndicator {
     show() {
         this.element.style.display = 'block';
         this.container.scrollTop = this.container.scrollHeight;
-        this.startDotAnimation();
+        if (this.animationStyle === 'dots') {
+            this.startDotAnimation();
+        }
         this.resetTimeout();
     }
 
     hide() {
         this.element.style.display = 'none';
-        this.stopDotAnimation();
+        if (this.animationStyle === 'dots') {
+            this.stopDotAnimation();
+        }
         this.clearTimeout();
     }
 
@@ -59,7 +69,6 @@ export default class TypingIndicator {
     }
 
     addEventListeners() {
-        // Example: Listen for custom events
         document.addEventListener('userTyping', () => this.show());
         document.addEventListener('stopTyping', () => this.hide());
     }
