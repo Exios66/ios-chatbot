@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        .chat-container {
+            max-width: 400px;
+            margin: 20px auto;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #1c1c1e;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .back-button {
+            color: #0b84ff;
+            text-decoration: none;
+        }
+        .chat-body {
+            padding: 10px;
+            height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 70%;
+            animation-duration: 0.3s;
+            animation-fill-mode: both;
+        }
+        .received {
+            background-color: #303030;
+            align-self: flex-start;
+        }
+        .sent {
+            background-color: #0b84ff;
+            align-self: flex-end;
+            animation-name: sendMessage;
+        }
+        @keyframes sendMessage {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .chat-footer {
+            background-color: #1c1c1e;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+        #message-input {
+            flex-grow: 1;
+            border: none;
+            background-color: #1c1c1e;
+            color: #fff;
+            padding: 8px;
+        }
+        #send-button {
+            background: none;
+            border: none;
+            color: #0b84ff;
+            font-size: 16px;
+            padding: 8px;
+            cursor: pointer;
+        }
+        #send-button:disabled {
+            color: #555;
+            cursor: default;
+        }
+        .typing-indicator {
+            padding: 8px 12px;
+            background-color: #303030;
+            border-radius: 18px;
+            align-self: flex-start;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <a href="#" class="back-button">&#8592; Back</a>
+            <span>Chatbot</span>
+            <span></span>
+        </div>
+        <div id="chat-body" class="chat-body">
+            <div class="message received">Hello! How can I assist you today?</div>
+        </div>
+        <div id="typing-indicator" class="typing-indicator">Chatbot is typing</div>
+        <div class="chat-footer">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button" disabled>Send</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
