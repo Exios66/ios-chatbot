@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Chatbot Interface</title>
-    <link rel="stylesheet" href="/styles/styles.css">
-    <link rel="stylesheet" href="/styles/themes/dark.css" id="theme-style">
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="module" src="/js/app.js"></script>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/themes/dark.css" id="theme-style">
+    <script src="https://cdn.socket.io/4.3.1/socket.io.min.js"></script>
+    <script type="module" src="js/app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Added Axios for OpenAI API -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -28,7 +28,7 @@
 
             themeToggle.addEventListener('click', () => {
                 const currentTheme = themeStyle.getAttribute('href');
-                const newTheme = currentTheme.includes('dark') ? '/styles/themes/light.css' : '/styles/themes/dark.css';
+                const newTheme = currentTheme.includes('dark') ? 'styles/themes/light.css' : 'styles/themes/dark.css';
                 themeStyle.setAttribute('href', newTheme);
                 toggleIcon.textContent = newTheme.includes('dark') ? '🌙' : '☀️';
             });
@@ -87,17 +87,44 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        .received {
+            background-color: #ececec;
+            align-self: flex-start;
+        }
+        .sent-animation {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .highlight {
+            background-color: yellow;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <header>
-            <img src="/assets/images/logo.svg" alt="Chatbot Logo" class="logo">
+            <img src="assets/images/logo.svg" alt="Chatbot Logo" class="logo">
             <h1>Modern Chatbot</h1>
             <button id="theme-toggle"><span id="toggle-icon">🌙</span></button>
             <div id="clock"></div>
         </header>
-        <main id="chat-container"></main>
+        <main id="chat-container" class="chat-container"></main>
         <footer>
             <div id="chat-input">
                 <input type="text" id="message-input" placeholder="Type a message...">
