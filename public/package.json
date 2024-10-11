@@ -1,30 +1,32 @@
 {
-  "name": "chatbot-interface",
-  "version": "1.0.0",
-  "description": "A simple chatbot interface with real-time communication",
-  "main": "server.js",
+  "name": "ai-chatbot-interface",
+  "version": "1.0.1",
+  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "build": "tsc"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
-    "body-parser": "^1.20.3",
-    "cookie-parser": "^1.4.7",
-    "ejs": "^3.1.10",
-    "express": "^4.21.1",
-    "marked": "^14.1.2",
-    "morgan": "^1.10.0",
-    "semver": "^7.3.5",
-    "socket.io": "^4.3.1",
-    "winston": "^3.3.3"
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "marked": "^4.0.12",
+    "dompurify": "^2.3.3",
+    "axios": "^0.27.2",
+    "winston": "^3.8.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15",
-    "typescript": "^5.6.3"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.13",
+    "@types/node": "^18.0.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22",
+    "typescript": "^4.7.4"
   },
-  "markdownlint": {
-    "config": {
-      "default": true
-    }
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/styles.css">
+</head>
+<body>
+    <h1><%= title %></h1>
+    <form id="model-selection-form">
+        <select id="model-select">
+            <% models.forEach(model => { %>
+                <option value="<%= model.id %>"><%= model.name %></option>
+            <% }); %>
+        </select>
+        <button type="submit">Select Model</button>
+    </form>
+    <script src="/js/modelSelection.js"></script>
+</body>
+</html>

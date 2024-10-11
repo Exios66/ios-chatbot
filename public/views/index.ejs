@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/styles.css">
+</head>
+<body>
+    <h1><%= title %></h1>
+    <nav>
+        <ul>
+            <li><a href="/chat">Chat</a></li>
+            <li><a href="/model">Model Selection</a></li>
+            <li><a href="/users">User Management</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Available Models</h2>
+        <ul>
+            <% models.forEach(model => { %>
+                <li><%= model.name %></li>
+            <% }); %>
+        </ul>
+    </main>
+    <script src="/js/client.js"></script>
+</body>
+</html>

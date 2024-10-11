@@ -1,89 +1,94 @@
 import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import http from 'http';
 import { Server } from 'socket.io';
-import path from 'path';
-import chatbot from './src/chatbot';
-import logger from './src/utils/logger';
-import errorHandler from './src/middleware/errorHandler';
 
-import debug from 'debug';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const initialPort = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000;
-
-const debugApp = debug('chatbot-interface:app');
-debugApp(`Server is starting on port ${PORT}`);
+app.use(cors());
+app.use(express.json());
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html for the root route
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Serve static files from specific directories
+app.use('/styles', express.static(path.join(__dirname, '..', 'styles')));
+app.use('/js', express.static(path.join(__dirname, '..', 'js')));
+app.use('/scripts', express.static(path.join(__dirname, '..', 'scripts')));
+
+// Log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
 });
 
-// Error handling middleware
-app.use(errorHandler);
+const port = process.env.PORT || 3000;
 
-io.on('connection', (socket) => {
-    logger.info('New client connected', { socketId: socket.id });
+app.get('*', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <script>window.SERVER_PORT = ${port};</script>
+      <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+      <!-- Your HTML content -->
+      <script src="/app.js"></script>
+    </body>
+    </html>
+  `);
+});
 
-    socket.on('chat message', async (message, callback) => {
-        if (!message) {
-            logger.warn('Received empty message', { socketId: socket.id });
-            return callback({ error: 'Message cannot be empty.' });
-        }
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
 
-        try {
-            logger.info('Message received:', { message, socketId: socket.id });
+const findAvailablePort = (startPort) => {
+  return new Promise((resolve, reject) => {
+    const server = http.createServer();
+    server.listen(startPort, () => {
+      server.close(() => {
+        resolve(startPort);
+      });
+    });
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        findAvailablePort(startPort + 1).then(resolve, reject);
+      } else {
+        reject(err);
+      }
+    });
+  });
+};
 
-            // Simulate bot typing
-            socket.emit('bot typing');
+findAvailablePort(initialPort)
+  .then((port) => {
+    const server = http.createServer(app);
+    const io = new Server(server);
 
-            // Get response from chatbot
-            const response = await chatbot.getResponse(message);
+    io.on('connection', (socket) => {
+      console.log('A user connected');
 
-            // Simulate delay before sending response
-            setTimeout(() => {
-                socket.emit('bot stop typing');
-                callback({ response });
-                io.emit('chat message', response);
-            }, 1000 + Math.random() * 2000);
-        } catch (error) {
-            logger.error('Error processing chat message', { error: error.message, socketId: socket.id });
-            callback({ error: 'An error occurred while processing your message.' });
-        }
+      socket.on('chat message', (msg) => {
+        io.emit('chat message', msg);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('User disconnected');
+      });
     });
 
-    socket.on('typing', () => {
-        socket.broadcast.emit('user typing');
+    server.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
     });
-
-    socket.on('disconnect', () => {
-        logger.info('Client disconnected', { socketId: socket.id });
-    });
-
-    socket.on('error', (error) => {
-        logger.error('Socket error', { error: error.message, socketId: socket.id });
-    });
-});
-
-server.listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
-});
-
-// Handle uncaught exceptions with a more graceful shutdown
-process.on('uncaughtException', (error) => {
-    logger.error('Uncaught Exception', { error: error.message, stack: error.stack });
-    // Optionally, perform cleanup tasks here before exiting
-    process.exit(1);
-});
-
-// Handle unhandled promise rejections with improved logging
-process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection', { reason: reason instanceof Error ? reason.message : reason, stack: reason instanceof Error ? reason.stack : null });
-    // Optionally, consider whether to exit the process or not
-});
+  })
+  .catch((err) => {
+    console.error('No available ports found:', err);
+  });

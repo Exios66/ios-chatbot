@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chatbot Interface</title>
-    <link rel="stylesheet" href="/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
-</head>
-<body>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/themes/light.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="/styles/themes/dark.css" id="dark-theme-stylesheet">
+    <link rel="stylesheet" href="/styles/font-awesome.css">
+    <script src="/scripts/marked.min.js" defer></script>
+    <script src="/scripts/purify.min.js" defer></script>
+<body class="dark-mode">
     <div class="container">
         <header>
             <h1>AI Chatbot Interface</h1>
@@ -17,49 +19,92 @@
             </button>
         </header>
         <div class="content" id="content">
-            <!-- Page content remains the same -->
+            <!-- Home Tab -->
+            <div id="home-tab" class="tab-content">
+                <h2>Welcome to AI Chatbot Interface</h2>
+                <p>Select a model and start chatting!</p>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="chat-tab" class="tab-content">
+                <div id="chat-container" class="chat-body"></div>
+                <div id="typing-indicator" class="typing-indicator"></div>
+                <div class="chat-footer">
+                    <input type="text" id="message-input" placeholder="Type your message...">
+                    <button id="send-button" type="button" disabled>Send</button>
+                </div>
+            </div>
+
+            <!-- Model Selection Tab -->
+            <div id="model-selection-tab" class="tab-content">
+                <h2>Select AI Model</h2>
+                <div class="model-selection">
+                    <div>
+                        <label for="llama-models">Llama Models:</label>
+                        <select id="llama-models" onchange="selectModel('llama')"></select>
+                    </div>
+                    <div>
+                        <label for="openai-models">OpenAI Models:</label>
+                        <select id="openai-models" onchange="selectModel('openai')"></select>
+                    </div>
+                    <div>
+                        <label for="openrouter-models">OpenRouter Models:</label>
+                        <select id="openrouter-models" onchange="selectModel('openrouter')"></select>
+                    </div>
+                </div>
+                <p>Current Model: <span id="current-model">None</span></p>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <h2>Settings</h2>
+                <!-- Add settings options here -->
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="admin-tab" class="tab-content">
+                <h2>Admin Panel</h2>
+                <!-- Add admin features here -->
+            </div>
         </div>
         <footer>
-            <button class="tab-button" data-tab="home">
+            <button class="tab-button" data-tab="home" type="button">
                 <i class="fas fa-home"></i>
                 Home
             </button>
-            <button class="tab-button" data-tab="chat">
+            <button type="button" class="tab-button" data-tab="chat">
                 <i class="fas fa-comment"></i>
                 Chat
             </button>
-            <button class="tab-button" data-tab="model-selection">
+            <button class="tab-button" data-tab="model-selection" type="button">
                 <i class="fas fa-robot"></i>
                 Models
             </button>
-            <button class="tab-button" data-tab="settings">
+            <button class="tab-button" data-tab="settings" type="button">
                 <i class="fas fa-cog"></i>
                 Settings
             </button>
-            <button class="tab-button" data-tab="admin">
+            <button class="tab-button" data-tab="admin" type="button">
                 <i class="fas fa-user-shield"></i>
                 Admin
             </button>
         </footer>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script type="module">
-        import { navigateTo, changeTab, updateActiveTab } from '/navigation.js';
-        import { toggleDarkMode } from '/darkMode.js';
-        import { selectModel, initializeModelSelection } from '/modelSelection.js';
-        import { initializeChat } from '/chat.js';
+        import { navigateTo, changeTab, updateActiveTab } from '/js/navigation.js';
+        import { toggleTheme, setInitialTheme, handleSystemThemeChange } from '/js/themeToggle.js';
+        import { selectModel, initializeModelSelection } from '/js/modelSelection.js';
+        import { initializeChat } from '/js/chat.js';
 
         function initializeApp() {
             navigateTo('home');
-            const darkMode = localStorage.getItem('darkMode');
-            if (darkMode === 'true') {
-                document.body.classList.add('dark-mode');
-                document.querySelector('.dark-mode-toggle i').classList.replace('fa-moon', 'fa-sun');
-            }
+            setInitialTheme();
             initializeChat();
             initializeModelSelection();
             
-            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
             document.querySelectorAll('.nav-button').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const page = e.target.dataset.page;
@@ -70,11 +115,53 @@
             });
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const tab = e.target.dataset.tab;
+                    const tab = e.target.closest('.tab-button').dataset.tab;
                     if (tab) {
                         changeTab(tab);
                     }
                 });
+            });
+
+            // Add event listener for system theme changes
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            prefersDarkScheme.addListener(handleSystemThemeChange);
+
+            // Initialize WebSocket connection
+            const socket = io();
+
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+            });
+
+            // Add event listeners for chat functionality
+            const sendButton = document.getElementById('send-button');
+            const messageInput = document.getElementById('message-input');
+
+            sendButton.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    socket.emit('chat message', message);
+                    messageInput.value = '';
+                }
+            });
+
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && messageInput.value.trim()) {
+                    sendButton.click();
+                }
+            });
+
+            socket.on('chat message', (msg) => {
+                const chatContainer = document.getElementById('chat-container');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = msg;
+                messageElement.classList.add('message', 'received');
+                chatContainer.appendChild(messageElement);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             });
         }
 

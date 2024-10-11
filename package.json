@@ -1,10 +1,27 @@
 {
+  "name": "ai-chatbot-interface",
+  "version": "1.0.1",
+  "type": "module",
+  "main": "public/src/server.js",
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/debug": "^4.1.12",
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "semver": "^7.6.3",
+    "socket.io": "^4.7.2"
+  },
+  "scripts": {
+    "start": "node public/src/server.js",
+    "dev": "nodemon public/src/server.js",
+    "test": "jest --passWithNoTests"
+  },
+  "jest": {
+    "transform": {}
   }
 }
