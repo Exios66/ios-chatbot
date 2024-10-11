@@ -3,16 +3,16 @@
     "target": "es6",
     "module": "commonjs",
     "strict": true,
+    "rootDir": "..",
+    "outDir": "../dist",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
     "noImplicitAny": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["../**/*.ts", "../**/*.tsx"],
+  "exclude": ["../node_modules", "../**/*.spec.ts"]
 }

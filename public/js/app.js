@@ -1,9 +1,9 @@
 import express from 'express';
 import path from 'path';
-import logger from 'morgan';
+import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import csrf from 'csurf';
+import csrf from 'csrf';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -29,13 +29,13 @@ app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
 
 // Middleware
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf();
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
