@@ -182,3 +182,8 @@ body {
 .sent-animation {
     animation-name: sendMessage;
 }
+
+.github-link {
+    text-align: center;
+    margin-top: 10px;
+}
