@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <header>
-            AI Chatbot Interface
+            <h1>AI Chatbot Interface</h1>
             <button type="button" class="dark-mode-toggle" title="Toggle Dark Mode" id="darkModeToggle">
                 <i class="fas fa-moon"></i>
             </button>
@@ -61,15 +61,26 @@
             
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             document.querySelectorAll('.nav-button').forEach(button => {
-                button.addEventListener('click', (e) => navigateTo(e.target.dataset.page));
+                button.addEventListener('click', (e) => {
+                    const page = e.target.dataset.page;
+                    if (page) {
+                        navigateTo(page);
+                    }
+                });
             });
             document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', (e) => changeTab(e.target.dataset.tab));
+                button.addEventListener('click', (e) => {
+                    const tab = e.target.dataset.tab;
+                    if (tab) {
+                        changeTab(tab);
+                    }
+                });
             });
         }
 
         document.addEventListener('DOMContentLoaded', initializeApp);
 
+        // Expose functions to the global window object for external access
         window.navigateTo = navigateTo;
         window.changeTab = changeTab;
         window.selectModel = selectModel;

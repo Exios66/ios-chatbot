@@ -1,6 +1,6 @@
-const logger = require('../utils/logger');
+import logger from '../utils/logger';
 
-function errorHandler(err, req, res, next) {
+export function errorHandler(err, _, res, next) {
     logger.error('Express error', { error: err.message, stack: err.stack });
 
     if (res.headersSent) {
@@ -12,5 +12,3 @@ function errorHandler(err, req, res, next) {
         error: process.env.NODE_ENV === 'production' ? {} : err.message
     });
 }
-
-module.exports = errorHandler;

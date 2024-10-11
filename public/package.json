@@ -24,9 +24,7 @@
   },
   "markdownlint": {
     "config": {
-      "default": true,
-      "MD013": false,
-      "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/v0.35.0/schema/markdownlint-config-schema.json"
+      "default": true
     }
   }
 }

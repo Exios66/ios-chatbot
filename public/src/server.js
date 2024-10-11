@@ -1,16 +1,21 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const path = require('path');
-const chatbot = require('./src/chatbot');
-const logger = require('./src/utils/logger');
-const errorHandler = require('./src/middleware/errorHandler');
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import path from 'path';
+import chatbot from './src/chatbot';
+import logger from './src/utils/logger';
+import errorHandler from './src/middleware/errorHandler';
+
+import debug from 'debug';
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
+
+const debugApp = debug('chatbot-interface:app');
+debugApp(`Server is starting on port ${PORT}`);
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -27,6 +32,11 @@ io.on('connection', (socket) => {
     logger.info('New client connected', { socketId: socket.id });
 
     socket.on('chat message', async (message, callback) => {
+        if (!message) {
+            logger.warn('Received empty message', { socketId: socket.id });
+            return callback({ error: 'Message cannot be empty.' });
+        }
+
         try {
             logger.info('Message received:', { message, socketId: socket.id });
 
@@ -65,13 +75,15 @@ server.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
 
-// Handle uncaught exceptions
+// Handle uncaught exceptions with a more graceful shutdown
 process.on('uncaughtException', (error) => {
     logger.error('Uncaught Exception', { error: error.message, stack: error.stack });
+    // Optionally, perform cleanup tasks here before exiting
     process.exit(1);
 });
 
-// Handle unhandled promise rejections
+// Handle unhandled promise rejections with improved logging
 process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection', { reason: reason.message, stack: reason.stack });
+    logger.error('Unhandled Rejection', { reason: reason instanceof Error ? reason.message : reason, stack: reason instanceof Error ? reason.stack : null });
+    // Optionally, consider whether to exit the process or not
 });
