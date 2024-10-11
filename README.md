@@ -5,7 +5,6 @@
   <img
     src="https://aider.chat/assets/screencast.svg"
     alt="aider screencast"
-  >
 </p>
 <!-- SCREENCAST END -->
 
