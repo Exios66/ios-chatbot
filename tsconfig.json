@@ -7,12 +7,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "public/src",
     "noImplicitAny": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
+  "include": ["public/src/**/*", "public/js/chatbot.js"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

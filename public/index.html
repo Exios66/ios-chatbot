@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Interface</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            AI Chatbot Interface
+            <button type="button" class="dark-mode-toggle" title="Toggle Dark Mode" id="darkModeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+        <div class="content" id="content">
+            <!-- Page content remains the same -->
+        </div>
+        <footer>
+            <button class="tab-button" data-tab="home">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="tab-button" data-tab="chat">
+                <i class="fas fa-comment"></i>
+                Chat
+            </button>
+            <button class="tab-button" data-tab="model-selection">
+                <i class="fas fa-robot"></i>
+                Models
+            </button>
+            <button class="tab-button" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                Settings
+            </button>
+            <button class="tab-button" data-tab="admin">
+                <i class="fas fa-user-shield"></i>
+                Admin
+            </button>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { navigateTo, changeTab, updateActiveTab } from '/navigation.js';
+        import { toggleDarkMode } from '/darkMode.js';
+        import { selectModel, initializeModelSelection } from '/modelSelection.js';
+        import { initializeChat } from '/chat.js';
+
+        function initializeApp() {
+            navigateTo('home');
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'true') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.dark-mode-toggle i').classList.replace('fa-moon', 'fa-sun');
+            }
+            initializeChat();
+            initializeModelSelection();
+            
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.addEventListener('click', (e) => navigateTo(e.target.dataset.page));
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', (e) => changeTab(e.target.dataset.tab));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        window.navigateTo = navigateTo;
+        window.changeTab = changeTab;
+        window.selectModel = selectModel;
+    </script>
+</body>
+</html>
