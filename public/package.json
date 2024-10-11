@@ -1,0 +1,32 @@
+{
+  "name": "chatbot-interface",
+  "version": "1.0.0",
+  "description": "A simple chatbot interface with real-time communication",
+  "main": "server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "marked": "^14.1.2",
+    "morgan": "^1.10.0",
+    "semver": "^7.3.5",
+    "socket.io": "^4.3.1",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "typescript": "^5.6.3"
+  },
+  "markdownlint": {
+    "config": {
+      "default": true,
+      "MD013": false,
+      "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/v0.35.0/schema/markdownlint-config-schema.json"
+    }
+  }
+}

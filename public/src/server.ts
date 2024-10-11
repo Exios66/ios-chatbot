@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/api/models', (req, res) => {
+app.get('/api/models', (req: Request, res: Response) => {
   // This is a mock response. In a real application, you'd fetch this data from your AI service.
   res.json({
     llama: ['Llama 7B', 'Llama 13B', 'Llama 30B'],
