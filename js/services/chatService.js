@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export async function getConversationHistory(userId) {
   try {
     const response = await axios.get(`/api/chat/history/${userId}`);

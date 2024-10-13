@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
 import http from 'http';
+import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -11,11 +12,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+
+// Mock database for chat messages
+const chatMessages = {};
 
 app.get('/api/models', (req, res) => {
     // This is a mock response. In a real application, you'd fetch this data from your AI service.
@@ -26,12 +33,39 @@ app.get('/api/models', (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.send('Welcome to the AI Chatbot Interface');
+app.get('/api/chat/history/:userId', (req, res) => {
+    const userId = req.params.userId;
+    res.json(chatMessages[userId] || []);
+});
+
+app.post('/api/chat/message', (req, res) => {
+    const { userId, message } = req.body;
+    if (!chatMessages[userId]) {
+        chatMessages[userId] = [];
+    }
+    chatMessages[userId].push({ content: message, sender: 'user' });
+    res.json({ success: true, message: 'Message saved successfully' });
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('chat message', (msg) => {
+        console.log('Message received:', msg);
+        io.emit('chat message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
 });
 
 export function createServer() {
-    return http.createServer(app);
+    return server;
 }
 
 // Export the Express app
@@ -45,7 +79,7 @@ export { cors, path, dotenv };
 
 // Start the server if this file is run directly
 if (import.meta.url === `file://${__filename}`) {
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log(`Server running at http://localhost:${port}`);
     });
 }

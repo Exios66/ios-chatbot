@@ -1,37 +1,48 @@
-import { getModels, selectModel } from './services/modelService.js';
+import { getModels, selectModel as apiSelectModel } from './services/modelService.js';
 
-const modelSelect = document.getElementById('model-select');
-const modelSelectionForm = document.getElementById('model-selection-form');
+const modelSelects = {
+  llama: document.getElementById('llama-models'),
+  openai: document.getElementById('openai-models'),
+  openrouter: document.getElementById('openrouter-models')
+};
 
 async function loadModels() {
   try {
     const models = await getModels();
-    models.forEach(model => {
-      const option = document.createElement('option');
-      option.value = model.id;
-      option.textContent = model.name;
-      modelSelect.appendChild(option);
+    Object.entries(models).forEach(([provider, providerModels]) => {
+      const select = modelSelects[provider];
+      if (select) {
+        providerModels.forEach(model => {
+          const option = document.createElement('option');
+          option.value = model;
+          option.textContent = model;
+          select.appendChild(option);
+        });
+      }
     });
   } catch (error) {
     console.error('Error loading models:', error);
   }
 }
 
-modelSelectionForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const selectedModelId = modelSelect.value;
-  try {
-    const result = await selectModel(getUserId(), selectedModelId);
-    alert(`Model ${result.name} selected successfully!`);
-  } catch (error) {
-    console.error('Error selecting model:', error);
-    alert('Failed to select model. Please try again.');
+export function selectModel(provider) {
+  const selectedModelId = modelSelects[provider].value;
+  if (selectedModelId) {
+    document.getElementById('current-model').textContent = selectedModelId;
+    // You might want to call the API here to actually select the model
+    // apiSelectModel(getUserId(), selectedModelId);
   }
-});
+}
 
-loadModels();
+export function initializeModelSelection() {
+  loadModels();
+  Object.keys(modelSelects).forEach(provider => {
+    modelSelects[provider].addEventListener('change', () => selectModel(provider));
+  });
+}
 
 function getUserId() {
   // Implement this function to get the current user's ID
   // This could be stored in localStorage or retrieved from a global state
+  return 'dummy-user-id';
 }
