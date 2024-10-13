@@ -1,8 +1,10 @@
 import { getModels, selectModel as apiSelectModel } from './services/modelService.js';
+import { getUserId, showErrorMessage, showSuccessMessage } from './utils.js';
 
 const modelSelects = {
   llama: document.getElementById('llama-models'),
   openai: document.getElementById('openai-models'),
+  anthropic: document.getElementById('anthropic-models'),
   openrouter: document.getElementById('openrouter-models')
 };
 
@@ -22,6 +24,7 @@ async function loadModels() {
     });
   } catch (error) {
     console.error('Error loading models:', error);
+    showErrorMessage('Failed to load models. Please try again.');
   }
 }
 
@@ -29,8 +32,16 @@ export function selectModel(provider) {
   const selectedModelId = modelSelects[provider].value;
   if (selectedModelId) {
     document.getElementById('current-model').textContent = selectedModelId;
-    // You might want to call the API here to actually select the model
-    // apiSelectModel(getUserId(), selectedModelId);
+    apiSelectModel(provider, selectedModelId)
+      .then(() => {
+        localStorage.setItem('currentModel', selectedModelId);
+        localStorage.setItem('currentProvider', provider);
+        showSuccessMessage(`Model ${selectedModelId} selected successfully!`);
+      })
+      .catch(error => {
+        console.error('Error selecting model:', error);
+        showErrorMessage('Failed to select model. Please try again.');
+      });
   }
 }
 
@@ -39,10 +50,14 @@ export function initializeModelSelection() {
   Object.keys(modelSelects).forEach(provider => {
     modelSelects[provider].addEventListener('change', () => selectModel(provider));
   });
-}
 
-function getUserId() {
-  // Implement this function to get the current user's ID
-  // This could be stored in localStorage or retrieved from a global state
-  return 'dummy-user-id';
+  // Set initial model if stored in localStorage
+  const storedModel = localStorage.getItem('currentModel');
+  const storedProvider = localStorage.getItem('currentProvider');
+  if (storedModel && storedProvider) {
+    document.getElementById('current-model').textContent = storedModel;
+    if (modelSelects[storedProvider]) {
+      modelSelects[storedProvider].value = storedModel;
+    }
+  }
 }

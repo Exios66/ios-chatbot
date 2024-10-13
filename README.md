@@ -1,74 +1,68 @@
-# Chatbot Interface
+# AI Chatbot Interface
 
-<!-- SCREENCAST START -->
-<p align="center">
-  <img
-    src="https://aider.chat/assets/screencast.svg"
-    alt="aider screencast"
-</p>
-<!-- SCREENCAST END -->
-
-## iOS-Chatbot
-
-A simple chatbot interface inspired by the iOS iMessage UI, featuring real-time communication using Node.js, Express, and Socket.IO.
+An interactive web-based chatbot interface that supports multiple AI models from OpenAI, Anthropic, OpenRouter, and Llama.
 
 ## Features
 
-- **iOS iMessage Style UI**: Provides a familiar chat interface that resembles Apple's iMessage app.
-- **Real-time Communication**: Enabled by Socket.IO for seamless, real-time messaging between users.
-- **Node.js Backend**: Powered by Express for managing the server-side logic and routing.
+- Support for multiple AI providers: OpenAI, Anthropic, OpenRouter, and Llama
+- Dynamic model selection
+- Real-time chat interface
+- iOS-style light and dark themes
+- Settings management
+- Admin panel for user management and system statistics
 
-## Technologies Used
-
-- **Node.js**: Backend framework for handling server operations.
-- **Express.js**: Fast and minimalist web framework for Node.js.
-- **Socket.IO**: Enables real-time bidirectional communication between web clients and servers.
-- **HTML/CSS**: Frontend structure and styling for the chatbot interface.
-- **JavaScript**: Client-side and server-side logic.
-  
 ## Installation
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/Exios66/ios-chatbot.git
+   ```
+   git clone https://github.com/your-username/ai-chatbot-interface.git
+   cd ai-chatbot-interface
    ```
 
-2. Navigate to the project directory:
+2. Install dependencies:
 
-   ```bash
-   cd ios-chatbot
    ```
-
-3. Install dependencies:
-
-   ```bash
    npm install
    ```
 
+3. Set up environment variables:
+   - Copy the `.env.example` file to `.env`
+   - Fill in the required API keys and other configuration options
+
 4. Start the server:
 
-   ```bash
+   ```
    npm start
    ```
 
-5. Open your browser and go to `http://localhost:3000` to access the chatbot interface.
+5. Open your browser and navigate to `http://localhost:3000`
 
 ## Usage
 
-Once the server is running, open the web app on multiple browsers or devices to test the real-time chat functionality. Messages sent from one user will immediately appear for all users in the conversation.
+1. Select an AI model from the Models tab
+2. Navigate to the Chat tab
+3. Start chatting with the selected AI model
 
-## Contribution
+## Configuration
 
-Feel free to fork this repository, submit issues, or make pull requests to contribute.
+Update the `.env` file with your API keys and other settings:
 
-### Steps for contributing:
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `ANTHROPIC_API_KEY`: Your Anthropic API key
+- `OPENROUTER_API_KEY`: Your OpenRouter API key
+- `PORT`: The port number for the server (default: 3000)
+- `HOST`: The host for the server (default: localhost)
+- `JWT_SECRET`: Secret key for JWT token generation
+- `DATABASE_URL`: Your database connection string
+- `API_KEY`: API key for external services
+- `ALLOWED_ORIGINS`: Comma-separated list of allowed origins for CORS
+- `NODE_ENV`: The environment (development, production, etc.)
 
-1. Fork the repository.
-2. Create a new branch for your feature/fix.
-3. Commit your changes.
-4. Submit a pull request explaining the changes.
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

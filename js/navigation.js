@@ -5,16 +5,16 @@ import { initializeModelSelection } from './modelSelection.js';
  * @param {string} page - The name of the page to navigate to.
  */
 export function navigateTo(page) {
-    // Hide all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.style.display = 'none');
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(p => p.style.display = 'none');
 
-    // Show the selected page if it exists
-    const selectedPage = document.getElementById(`${page}-page`);
-    if (selectedPage) {
-        selectedPage.style.display = 'block';
+    // Show the selected tab content if it exists
+    const selectedTab = document.getElementById(`${page}-tab`);
+    if (selectedTab) {
+        selectedTab.style.display = 'block';
     } else {
-        console.error(`Page not found: ${page}`);
+        console.error(`Tab not found: ${page}`);
         return;
     }
 

@@ -1,15 +1,25 @@
 import { saveMessage, getConversationHistory } from './services/chatService.js';
+import { generateResponse } from './services/modelService.js';
+import { getUserId, showErrorMessage } from './utils.js';
 
 const socket = io();
-let chatForm, messageInput, chatContainer;
+let messageInput, chatContainer, sendButton;
 
 export function initializeChat() {
-    chatForm = document.getElementById('chat-form');
     messageInput = document.getElementById('message-input');
     chatContainer = document.getElementById('chat-container');
+    sendButton = document.getElementById('send-button');
 
-    if (chatForm) {
-        chatForm.addEventListener('submit', handleSubmit);
+    if (sendButton) {
+        sendButton.addEventListener('click', handleSend);
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSend();
+            }
+        });
     }
 
     socket.on('chat message', (message) => {
@@ -19,8 +29,7 @@ export function initializeChat() {
     loadConversationHistory();
 }
 
-async function handleSubmit(e) {
-    e.preventDefault();
+async function handleSend() {
     const message = messageInput.value.trim();
     if (message) {
         try {
@@ -51,24 +60,24 @@ async function loadConversationHistory() {
     }
 }
 
-function getUserId() {
-    // Implement this function to get the current user's ID
-    // This could be stored in localStorage or retrieved from a global state
-    return 'dummy-user-id';
-}
-
 async function sendMessage(message) {
     try {
         const response = await saveMessage(getUserId(), message);
         displayMessage(message, 'user');
         socket.emit('chat message', message);
+
+        // Get the current model and provider
+        const currentModel = localStorage.getItem('currentModel');
+        const currentProvider = localStorage.getItem('currentProvider');
+
+        if (currentModel && currentProvider) {
+            const aiResponse = await generateResponse(message, currentProvider, currentModel);
+            displayMessage(aiResponse, 'bot');
+        } else {
+            showErrorMessage('Please select a model before sending a message.');
+        }
     } catch (error) {
         console.error('Error sending message:', error);
         showErrorMessage('Failed to send message. Please try again.');
     }
-}
-
-function showErrorMessage(message) {
-    // Implement this function to show error messages to the user
-    alert(message);
 }
