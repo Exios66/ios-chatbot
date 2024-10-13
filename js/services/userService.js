@@ -10,15 +10,15 @@ export async function getUsers() {
   }
 }
 
-export async function createUser(userData) {
-  try {
-    const response = await axios.post('/api/users', userData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
-  }
-}
+export const createUser = async (userData) => {
+  // Implementation...
+};
+
+export const getUserByEmail = async (email) => {
+  // Implementation...
+  // For example:
+  // return await User.findOne({ email });
+};
 
 export async function updateUser(userId, userData) {
   try {
