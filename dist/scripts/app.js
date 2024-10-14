@@ -153,15 +153,14 @@ app.get('/api/models', function (req, res) {
     openrouter: ['Openrouter Model A', 'Openrouter Model B', 'Openrouter Model C']
   });
 });
-
-// Serve static files from the root directory
-app.use(_express["default"]["static"](_dirname));
-
-// Serve static files from the 'styles' directory
-app.use('/styles', _express["default"]["static"](_path["default"].join(_dirname, 'styles')));
-
-// Serve static files from the 'scripts' directory
-app.use('/scripts', _express["default"]["static"](_path["default"].join(_dirname, 'scripts')));
+if (process.env.NODE_ENV === 'production') {
+  app.use(_express["default"]["static"](_path["default"].join(_dirname, '../dist')));
+} else {
+  app.use(_express["default"]["static"](_dirname));
+  app.use('/styles', _express["default"]["static"](_path["default"].join(_dirname, 'styles')));
+  app.use('/scripts', _express["default"]["static"](_path["default"].join(_dirname, 'scripts')));
+  app.use('/js', _express["default"]["static"](_path["default"].join(_dirname, 'js')));
+}
 var port = process.env.PORT || 3000;
 function startServer(port) {
   server.listen(port, function () {

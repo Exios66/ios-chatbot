@@ -145,14 +145,14 @@ app.get('/api/models', (req, res) => {
   });
 });
 
-// Serve static files from the root directory
-app.use(express.static(__dirname));
-
-// Serve static files from the 'styles' directory
-app.use('/styles', express.static(path.join(__dirname, 'styles')));
-
-// Serve static files from the 'scripts' directory
-app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../dist')));
+} else {
+    app.use(express.static(__dirname));
+    app.use('/styles', express.static(path.join(__dirname, 'styles')));
+    app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
+    app.use('/js', express.static(path.join(__dirname, 'js')));
+}
 
 const port = process.env.PORT || 3000;
 
