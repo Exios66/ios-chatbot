@@ -1,1 +1,34 @@
-node_modules
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Keep build artifacts
+!dist/
+!build/
+
+# But ignore specific files in dist if needed
+# dist/some-generated-file-to-ignore.js
+
+# Ignore npm debug log
+npm-debug.log*
+
+# Ignore yarn integrity file
+.yarn-integrity
+
+# Ignore coverage directory
+coverage/

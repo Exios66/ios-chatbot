@@ -5,12 +5,14 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "start": "node scripts/app.js",
+    "dev": "nodemon scripts/app.js",
     "test": "jest",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "mkdir -p dist && cp -R public/* dist/ && cp index.html dist/",
-    "build:server": "babel app.js -d dist",
+    "build": "npm run build:clean && npm run build:server && npm run build:client",
+    "build:clean": "rm -rf dist",
+    "build:server": "./node_modules/.bin/babel scripts -d dist/scripts --copy-files",
+    "build:client": "cp -R styles dist/ && cp index.html dist/ && cp -R js dist/",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "keywords": [

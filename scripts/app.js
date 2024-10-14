@@ -23,13 +23,13 @@ console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Import routes
-import indexRouter from './js/routes/index.js';
-import usersRouter from './js/routes/users.js';
-import chatRouter from './js/routes/chat.js';
-import modelRouter from './js/routes/model.js';
-import completionsRouter from './js/routes/completions.js';
-import weatherRouter from './js/routes/weather.js';
-import authRouter from './js/routes/auth.js';
+import indexRouter from '../js/routes/index.js';
+import usersRouter from '../js/routes/users.js';
+import chatRouter from '../js/routes/chat.js';
+import modelRouter from '../js/routes/model.js';
+import completionsRouter from '../js/routes/completions.js';
+import weatherRouter from '../js/routes/weather.js';
+import authRouter from '../js/routes/auth.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -144,6 +144,15 @@ app.get('/api/models', (req, res) => {
     openrouter: ['Openrouter Model A', 'Openrouter Model B', 'Openrouter Model C']
   });
 });
+
+// Serve static files from the root directory
+app.use(express.static(__dirname));
+
+// Serve static files from the 'styles' directory
+app.use('/styles', express.static(path.join(__dirname, 'styles')));
+
+// Serve static files from the 'scripts' directory
+app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 
 const port = process.env.PORT || 3000;
 
