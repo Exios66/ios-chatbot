@@ -1,0 +1,72 @@
+body {
+    background-color: #F2F2F7;
+    color: #000000;
+}
+
+.container {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+header {
+    background-color: #F2F2F7;
+    border-bottom: 1px solid #C6C6C8;
+}
+
+.dark-mode-toggle {
+    color: #007AFF;
+}
+
+footer {
+    background-color: #F2F2F7;
+    border-top: 1px solid #C6C6C8;
+}
+
+.tab-button {
+    color: #007AFF;
+}
+
+.tab-button.active {
+    color: #007AFF;
+    font-weight: bold;
+}
+
+.message.user {
+    background-color: #007AFF;
+    color: #FFFFFF;
+}
+
+.message.bot {
+    background-color: #E9E9EB;
+    color: #000000;
+}
+
+button[type="submit"] {
+    background-color: #007AFF;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    background-color: #FFFFFF;
+    border: 1px solid #C6C6C8;
+    color: #000000;
+}
+
+table {
+    border-color: #C6C6C8;
+}
+
+th, td {
+    border-color: #C6C6C8;
+}
+
+th {
+    background-color: #F2F2F7;
+}

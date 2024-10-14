@@ -1,0 +1,72 @@
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+.container {
+    background-color: #1C1C1E;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+}
+
+header {
+    background-color: #1C1C1E;
+    border-bottom: 1px solid #38383A;
+}
+
+.dark-mode-toggle {
+    color: #0A84FF;
+}
+
+footer {
+    background-color: #1C1C1E;
+    border-top: 1px solid #38383A;
+}
+
+.tab-button {
+    color: #0A84FF;
+}
+
+.tab-button.active {
+    color: #0A84FF;
+    font-weight: bold;
+}
+
+.message.user {
+    background-color: #0A84FF;
+    color: #FFFFFF;
+}
+
+.message.bot {
+    background-color: #3A3A3C;
+    color: #FFFFFF;
+}
+
+button[type="submit"] {
+    background-color: #0A84FF;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    background-color: #1C1C1E;
+    border: 1px solid #38383A;
+    color: #FFFFFF;
+}
+
+table {
+    border-color: #38383A;
+}
+
+th, td {
+    border-color: #38383A;
+}
+
+th {
+    background-color: #2C2C2E;
+}
