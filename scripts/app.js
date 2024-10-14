@@ -8,15 +8,15 @@ var _express = _interopRequireDefault(require("express"));
 var _http = _interopRequireDefault(require("http"));
 var _socket = require("socket.io");
 var _path = _interopRequireDefault(require("path"));
+var _url = require("url");
+var _dotenv = _interopRequireDefault(require("dotenv"));
 var _morgan = _interopRequireDefault(require("morgan"));
 var _cookieParser = _interopRequireDefault(require("cookie-parser"));
-var _dotenv = _interopRequireDefault(require("dotenv"));
+var _expressSession = _interopRequireDefault(require("express-session"));
 var _csrf = _interopRequireDefault(require("csrf"));
 var _expressRateLimit = _interopRequireDefault(require("express-rate-limit"));
 var _cors = _interopRequireDefault(require("cors"));
 var _helmet = _interopRequireDefault(require("helmet"));
-var _url = require("url");
-var _expressSession = _interopRequireDefault(require("express-session"));
 var _index = _interopRequireDefault(require("../js/routes/index.js"));
 var _users = _interopRequireDefault(require("../js/routes/users.js"));
 var _chat = _interopRequireDefault(require("../js/routes/chat.js"));
@@ -30,12 +30,12 @@ var _dirname = _path["default"].dirname(_filename);
 
 // Load environment variables from .env file
 _dotenv["default"].config({
-  path: _path["default"].join(_dirname, '.env')
+  path: _path["default"].join(_dirname, '..', '.env')
 });
 
 // Add this after dotenv.config()
-console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'Not set');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
 
 // Import routes
 
@@ -153,15 +153,14 @@ app.get('/api/models', function (req, res) {
     openrouter: ['Openrouter Model A', 'Openrouter Model B', 'Openrouter Model C']
   });
 });
-
-// Serve static files from the root directory
-app.use(_express["default"]["static"](_dirname));
-
-// Serve static files from the 'styles' directory
-app.use('/styles', _express["default"]["static"](_path["default"].join(_dirname, 'styles')));
-
-// Serve static files from the 'scripts' directory
-app.use('/scripts', _express["default"]["static"](_path["default"].join(_dirname, 'scripts')));
+if (process.env.NODE_ENV === 'production') {
+  app.use(_express["default"]["static"](_path["default"].join(_dirname, '../dist')));
+} else {
+  app.use(_express["default"]["static"](_dirname));
+  app.use('/styles', _express["default"]["static"](_path["default"].join(_dirname, 'styles')));
+  app.use('/scripts', _express["default"]["static"](_path["default"].join(_dirname, 'scripts')));
+  app.use('/js', _express["default"]["static"](_path["default"].join(_dirname, 'js')));
+}
 var port = process.env.PORT || 3000;
 function startServer(port) {
   server.listen(port, function () {

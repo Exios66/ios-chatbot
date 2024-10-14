@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { getUserId } from '../utils.js';
 
 const api = axios.create({
