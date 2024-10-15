@@ -1,22 +1,19 @@
-import { navigateTo, changeTab } from './navigation.js';
+import { initNavigation, changeTab } from './navigation.js';
 import { toggleTheme, setInitialTheme, handleSystemThemeChange } from './themeToggle.js';
 import { selectModel, initializeModelSelection } from './modelSelection.js';
 import { initializeChat } from './chat.js';
 import { initializeSettings } from './settings.js';
 import { initializeAdmin } from './admin.js';
 import { initUI } from './ui.js';
-import { initChat } from './chat.js';
-import { initModels } from './models.js';
-import { initSettings } from './settings.js';
-import { initAdmin } from './admin.js';
 
 function initializeApp() {
-    navigateTo('home');
     setInitialTheme();
+    initUI();
     initializeChat();
     initializeModelSelection();
     initializeSettings();
     initializeAdmin();
+    initNavigation();
     
     const darkModeToggle = document.getElementById('darkModeToggle');
     if (darkModeToggle) {
@@ -37,15 +34,8 @@ function initializeApp() {
     prefersDarkScheme.addListener(handleSystemThemeChange);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initUI();
-    initChat();
-    initModels();
-    initSettings();
-    initAdmin();
-});
+document.addEventListener('DOMContentLoaded', initializeApp);
 
 // Expose functions to the global window object for external access
-window.navigateTo = navigateTo;
 window.changeTab = changeTab;
 window.selectModel = selectModel;
