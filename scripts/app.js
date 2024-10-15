@@ -27,8 +27,7 @@ import indexRouter from '../js/routes/index.js';
 import usersRouter from '../js/routes/users.js';
 import chatRouter from '../js/routes/chat.js';
 import modelRouter from '../js/routes/model.js';
-import completionsRouter from '../js/routes/completions.js';
-import weatherRouter from '../js/routes/weather.js';
+import generateRouter from '../js/routes/generate.js';
 import authRouter from '../js/routes/auth.js';
 
 const app = express();
@@ -73,13 +72,20 @@ const validateCsrfToken = (req, res, next) => {
   next();
 };
 
-// Use validateCsrfToken middleware for routes that need CSRF protection
-app.post('/some-route', validateCsrfToken, (req, res) => {
-  // Your route handler
-});
-
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'cdn.socket.io'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'cdnjs.cloudflare.com', 'fonts.googleapis.com'],
+      fontSrc: ["'self'", 'cdnjs.cloudflare.com', 'fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'", 'ws:', 'wss:', 'http:', 'https:'],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
 
 // Add this check before the CORS middleware
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
@@ -101,16 +107,25 @@ app.use(cors({
   credentials: true
 }));
 
-// Serve static files from the dist directory
+// Serve static files from the dist, js, and fonts directories
 app.use(express.static(path.join(__dirname, '../dist')));
+app.use('/js', express.static(path.join(__dirname, '../js')));
+app.use('/fonts', express.static(path.join(__dirname, '../fonts')));
+
+// Add a middleware to set the correct MIME type for JavaScript files
+app.use((req, res, next) => {
+  if (req.url.endsWith('.js')) {
+    res.type('application/javascript');
+  }
+  next();
+});
 
 // API Routes
-app.use('/api/', indexRouter);
+app.use('/api', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/chat', chatRouter);
-app.use('/api/model', modelRouter);
-app.use('/api/completions', completionsRouter);
-app.use('/api/weather', weatherRouter);
+app.use('/api/models', modelRouter);
+app.use('/api/generate', generateRouter);
 app.use('/api/auth', authRouter);
 
 const apiLimiter = rateLimit({
@@ -119,15 +134,6 @@ const apiLimiter = rateLimit({
 });
 
 app.use('/api/', apiLimiter);
-
-app.get('/api/models', (req, res) => {
-  // This is a mock response. In a real application, you'd fetch this data from your AI service.
-  res.json({
-    llama: ['Llama 7B', 'Llama 13B', 'Llama 30B'],
-    openai: ['GPT-3.5 Turbo', 'GPT-4', 'Davinci'],
-    openrouter: ['Openrouter Model A', 'Openrouter Model B', 'Openrouter Model C']
-  });
-});
 
 // Fallback route for SPA
 app.get('*', (req, res) => {

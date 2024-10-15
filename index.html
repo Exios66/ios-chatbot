@@ -8,9 +8,34 @@
     <link rel="stylesheet" href="styles/themes/light.css" id="theme-stylesheet">
     <link rel="stylesheet" href="styles/themes/dark.css" disabled id="dark-theme-stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Regular.woff2') format('woff2'),
+                 url('fonts/Roboto-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Roboto';
+            src: url('fonts/Roboto-Bold.woff2') format('woff2'),
+                 url('fonts/Roboto-Bold.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module">
+        import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js';
+        window.axios = axios;
+    </script>
+    <script>
+        window.API_BASE_URL = 'http://localhost:3000'; // Change this for different environments
+    </script>
 </head>
 <body class="dark-mode">
     <div class="container">
@@ -138,12 +163,12 @@
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="js/main.js" type="module"></script>
     <script src="js/chat.js" type="module"></script>
     <script src="js/modelSelection.js" type="module"></script>
     <script src="js/settings.js" type="module"></script>
     <script src="js/admin.js" type="module"></script>
     <script src="js/themeToggle.js" type="module"></script>
     <script src="js/navigation.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
 </body>
 </html>

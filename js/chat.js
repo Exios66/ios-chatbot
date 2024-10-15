@@ -2,8 +2,7 @@ import { saveMessage, getConversationHistory } from './services/chatService.js';
 import { generateResponse } from './services/modelService.js';
 import { getUserId, showErrorMessage } from './utils.js';
 
-const socket = io();
-let messageInput, chatContainer, sendButton;
+let socket, messageInput, chatContainer, sendButton;
 
 export function initializeChat() {
     messageInput = document.getElementById('message-input');
@@ -22,6 +21,18 @@ export function initializeChat() {
         });
     }
 
+    // Initialize socket.io
+    socket = io();
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        showErrorMessage('Unable to connect to the server. Please try again later.');
+    });
+
     socket.on('chat message', (message) => {
         displayMessage(message, 'bot');
     });
@@ -37,6 +48,7 @@ async function handleSend() {
             messageInput.value = '';
         } catch (error) {
             console.error('Error sending message:', error);
+            showErrorMessage('Failed to send message. Please try again.');
         }
     }
 }
@@ -57,6 +69,7 @@ async function loadConversationHistory() {
         });
     } catch (error) {
         console.error('Error loading conversation history:', error);
+        showErrorMessage('Failed to load conversation history. Please refresh the page.');
     }
 }
 
@@ -64,7 +77,12 @@ async function sendMessage(message) {
     try {
         const response = await saveMessage(getUserId(), message);
         displayMessage(message, 'user');
-        socket.emit('chat message', message);
+        
+        if (socket && socket.connected) {
+            socket.emit('chat message', message);
+        } else {
+            console.warn('Socket not connected. Message not sent to server.');
+        }
 
         // Get the current model and provider
         const currentModel = localStorage.getItem('currentModel');
