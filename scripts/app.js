@@ -2,25 +2,25 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
+import session from 'express-session';
 import csrf from 'csrf';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import helmet from 'helmet';
-import { fileURLToPath } from 'url';
-import session from 'express-session';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables from .env file
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Add this after dotenv.config()
-console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'Not set');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
 
 // Import routes
 import indexRouter from '../js/routes/index.js';
@@ -44,7 +44,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Set up session middleware
 app.use(session({
@@ -102,32 +101,17 @@ app.use(cors({
   credentials: true
 }));
 
-// Routes
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/chat', chatRouter);
-app.use('/model', modelRouter);
-app.use('/completions', completionsRouter);
-app.use('/weather', weatherRouter);
-app.use('/auth', authRouter);
+// Serve static files from the dist directory
+app.use(express.static(path.join(__dirname, '../dist')));
 
-// Catch 404 and forward to error handler
-app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  // Set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // Render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+// API Routes
+app.use('/api/', indexRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/chat', chatRouter);
+app.use('/api/model', modelRouter);
+app.use('/api/completions', completionsRouter);
+app.use('/api/weather', weatherRouter);
+app.use('/api/auth', authRouter);
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -145,14 +129,16 @@ app.get('/api/models', (req, res) => {
   });
 });
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../dist')));
-} else {
-    app.use(express.static(__dirname));
-    app.use('/styles', express.static(path.join(__dirname, 'styles')));
-    app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
-    app.use('/js', express.static(path.join(__dirname, 'js')));
-}
+// Fallback route for SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 const port = process.env.PORT || 3000;
 

@@ -8,15 +8,15 @@ var _express = _interopRequireDefault(require("express"));
 var _http = _interopRequireDefault(require("http"));
 var _socket = require("socket.io");
 var _path = _interopRequireDefault(require("path"));
+var _url = require("url");
+var _dotenv = _interopRequireDefault(require("dotenv"));
 var _morgan = _interopRequireDefault(require("morgan"));
 var _cookieParser = _interopRequireDefault(require("cookie-parser"));
-var _dotenv = _interopRequireDefault(require("dotenv"));
+var _expressSession = _interopRequireDefault(require("express-session"));
 var _csrf = _interopRequireDefault(require("csrf"));
 var _expressRateLimit = _interopRequireDefault(require("express-rate-limit"));
 var _cors = _interopRequireDefault(require("cors"));
 var _helmet = _interopRequireDefault(require("helmet"));
-var _url = require("url");
-var _expressSession = _interopRequireDefault(require("express-session"));
 var _index = _interopRequireDefault(require("../js/routes/index.js"));
 var _users = _interopRequireDefault(require("../js/routes/users.js"));
 var _chat = _interopRequireDefault(require("../js/routes/chat.js"));
@@ -30,12 +30,12 @@ var _dirname = _path["default"].dirname(_filename);
 
 // Load environment variables from .env file
 _dotenv["default"].config({
-  path: _path["default"].join(_dirname, '.env')
+  path: _path["default"].join(_dirname, '..', '.env')
 });
 
 // Add this after dotenv.config()
-console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'Not set');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'Not set');
 
 // Import routes
 
@@ -54,7 +54,6 @@ app.use(_express["default"].urlencoded({
   extended: true
 }));
 app.use((0, _cookieParser["default"])());
-app.use(_express["default"]["static"](_path["default"].join(_dirname, 'public')));
 
 // Set up session middleware
 app.use((0, _expressSession["default"])({
@@ -113,32 +112,17 @@ app.use((0, _cors["default"])({
   credentials: true
 }));
 
-// Routes
-app.use('/', _index["default"]);
-app.use('/users', _users["default"]);
-app.use('/chat', _chat["default"]);
-app.use('/model', _model["default"]);
-app.use('/completions', _completions["default"]);
-app.use('/weather', _weather["default"]);
-app.use('/auth', _auth["default"]);
+// Serve static files from the dist directory
+app.use(_express["default"]["static"](_path["default"].join(_dirname, '../dist')));
 
-// Catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// Error handler
-app.use(function (err, req, res, next) {
-  // Set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // Render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+// API Routes
+app.use('/api/', _index["default"]);
+app.use('/api/users', _users["default"]);
+app.use('/api/chat', _chat["default"]);
+app.use('/api/model', _model["default"]);
+app.use('/api/completions', _completions["default"]);
+app.use('/api/weather', _weather["default"]);
+app.use('/api/auth', _auth["default"]);
 var apiLimiter = (0, _expressRateLimit["default"])({
   windowMs: 15 * 60 * 1000,
   // 15 minutes
@@ -153,14 +137,17 @@ app.get('/api/models', function (req, res) {
     openrouter: ['Openrouter Model A', 'Openrouter Model B', 'Openrouter Model C']
   });
 });
-if (process.env.NODE_ENV === 'production') {
-  app.use(_express["default"]["static"](_path["default"].join(_dirname, '../dist')));
-} else {
-  app.use(_express["default"]["static"](_dirname));
-  app.use('/styles', _express["default"]["static"](_path["default"].join(_dirname, 'styles')));
-  app.use('/scripts', _express["default"]["static"](_path["default"].join(_dirname, 'scripts')));
-  app.use('/js', _express["default"]["static"](_path["default"].join(_dirname, 'js')));
-}
+
+// Fallback route for SPA
+app.get('*', function (req, res) {
+  res.sendFile(_path["default"].join(_dirname, '../dist', 'index.html'));
+});
+
+// Error handler
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 var port = process.env.PORT || 3000;
 function startServer(port) {
   server.listen(port, function () {
